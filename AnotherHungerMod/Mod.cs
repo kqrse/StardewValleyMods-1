@@ -13,8 +13,10 @@ using SObject = StardewValley.Object;
 
 namespace AnotherHungerMod
 {
-    internal class Mod : StardewModdingAPI.Mod
-    {
+    internal class Mod : StardewModdingAPI.Mod {
+        public const string FullnessBuffId = "Spacechase0.AnotherHungerMod_Fullness";
+        public const string HungryBuffId = "Spacechase0.AnotherHungerMod_Hungry";
+
         public static Mod Instance;
         public static Configuration Config;
 
@@ -233,12 +235,19 @@ namespace AnotherHungerMod
 
             double fullness = Game1.player.GetFullness();
 
-            Buff fullBuff = Game1.player.buffs.appliedBuffs.Values.FirstOrDefault(b => b.id == "Fullness");
+            Buff fullBuff = Game1.player.buffs.AppliedBuffs.Values.FirstOrDefault(b => b.id == Mod.FullnessBuffId);
             if (fullness > Mod.Config.PositiveBuffThreshold)
             {
                 if (fullBuff == null)
                 {
-                    fullBuff = new Buff("Fullness", duration: 10 * 7000, buff_effects: new BuffEffects() { speed = { 1 }, attack = { 2 } }, display_name: I18n.Buff_Full());
+                    fullBuff = new Buff(
+                        id: FullnessBuffId,
+                        duration: 10 * 7000,
+                        effects: new BuffEffects {
+                            Speed = { 1 },
+                            Attack = { 2 }
+                        },
+                        displayName: I18n.Buff_Full());
                     Game1.player.buffs.Apply(fullBuff);
                 }
                 fullBuff.millisecondsDuration = 7000 * (int)((fullness - Mod.Config.PositiveBuffThreshold) / (10 * Mod.Config.DrainPerMinute));
@@ -248,12 +257,18 @@ namespace AnotherHungerMod
                 fullBuff.millisecondsDuration = 0;
             }
 
-            Buff hungryBuff = Game1.player.buffs.appliedBuffs.Values.FirstOrDefault(b => b.id == "Hungry");
+            Buff hungryBuff = Game1.player.buffs.AppliedBuffs.Values.FirstOrDefault(b => b.id == Mod.HungryBuffId);
             if (fullness < Mod.Config.NegativeBuffThreshold)
             {
                 if (hungryBuff == null)
                 {
-                    hungryBuff = new Buff("Hungry", duration: 10 * 7000, buff_effects: new BuffEffects() { speed = { -2 } }, display_name: I18n.Buff_Hungry());
+                    hungryBuff = new Buff(
+                        id: HungryBuffId,
+                        duration: 10 * 7000,
+                        effects: new BuffEffects() {
+                            Speed = { -2 }
+                        },
+                        displayName: I18n.Buff_Hungry());
                     Game1.player.buffs.Apply(hungryBuff);
                 }
                 hungryBuff.millisecondsDuration = 7000 * (int)(fullness / (10 * Mod.Config.DrainPerMinute));
